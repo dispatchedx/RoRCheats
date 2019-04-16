@@ -532,8 +532,10 @@ namespace RoRCheats
             {
                 for (ItemIndex itemIndex = ItemIndex.Syringe; itemIndex < (ItemIndex)78; itemIndex++)
                 {
-                    
-                    LocalPlayerInv.ResetItem(itemIndex);
+                    //If an item exists, delete the whole stack of it
+                    int itemCount = LocalPlayerInv.GetItemCount(itemIndex);
+                    if (itemCount>0)
+                    LocalPlayerInv.RemoveItem(itemIndex,itemCount);
                     
                 }
                 LocalPlayerInv.SetEquipmentIndex(EquipmentIndex.None);
