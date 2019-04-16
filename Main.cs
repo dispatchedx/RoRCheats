@@ -30,7 +30,7 @@ namespace RoRCheats
         public static uint moneyToGive = 100;
         public static uint coinsToGive = 10;
         public static int btnY, mulY;
-        
+        public static string str = "0";
 
         private void OnGUI()
         {
@@ -215,11 +215,11 @@ namespace RoRCheats
             
             GUI.Box(new Rect(rect.x + 0f, rect.y + 0f, widthSize + 10, 50f + 45 * mulY), "", BgStyle);
             GUI.Label(new Rect(rect.x + 0f, rect.y + 5f, widthSize + 10, 95f), "Spektre menu\nv 0.03", LabelStyle);
-           
+
 
             if (_CharacterCollected)
             {
-               
+
                 // we dont have a god toggle bool, because we can just ref localhealth
                 if (LocalHealth.godMode)
                 {
@@ -327,12 +327,20 @@ namespace RoRCheats
                     if (allItemsQuantity >= 1)
                         allItemsQuantity += 1;
                 }
-                if (GUI.Button(BtnRect(9, false), "Stack Inventory", BtnStyle)) 
+                if (GUI.Button(BtnRect(9, true), "Give Item by ID", BtnStyle))
+                {
+                    int i;
+                    i = int.Parse(str);
+                    GiveItem(i);
+                }
+                str = GUI.TextField(new Rect(rect.x + widthSize - 80, rect.y + btnY, 85, 40), str, OffStyle);
+
+                if (GUI.Button(BtnRect(10, false), "Stack Inventory", BtnStyle))
                 {
                     StackInventory();
 
                 }
-                if (GUI.Button(BtnRect(10, false), "Clear Inventory", BtnStyle))
+                if (GUI.Button(BtnRect(11, false), "Clear Inventory", BtnStyle))
                 {
 
                     ClearInventory();
@@ -532,11 +540,7 @@ namespace RoRCheats
             {
                 for (ItemIndex itemIndex = ItemIndex.Syringe; itemIndex < (ItemIndex)78; itemIndex++)
                 {
-                    //If an item exists, delete the whole stack of it
-                    int itemCount = LocalPlayerInv.GetItemCount(itemIndex);
-                    if (itemCount>0)
-                    LocalPlayerInv.RemoveItem(itemIndex,itemCount);
-                    
+                    LocalPlayerInv.ResetItem(itemIndex);
                 }
                 LocalPlayerInv.SetEquipmentIndex(EquipmentIndex.None);
             }
@@ -563,6 +567,12 @@ namespace RoRCheats
         {
             //Does the same thing as the shrine of order. Orders all your items into stacks of several random items.
             LocalPlayerInv.ShrineRestackInventory(Run.instance.runRNG);
+        }
+
+        private static void GiveItem(int itemIndex)
+        {
+            if (LocalPlayerInv)
+                LocalPlayerInv.GiveItem((ItemIndex)itemIndex);
         }
         // self explanatory
         private static void giveXP()
