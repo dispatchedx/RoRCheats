@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RoR2;
+using UnityEngine.Networking;
 
 namespace RoRCheats
 {
@@ -144,7 +145,7 @@ namespace RoRCheats
 
         public void Update()
         {
-            CharacterRoutine();
+            //CharacterRoutine();
             CheckInputs();
             StatsRoutine();
         }
@@ -216,134 +217,137 @@ namespace RoRCheats
             
             GUI.Box(new Rect(rect.x + 0f, rect.y + 0f, widthSize + 10, 50f + 45 * mulY), "", BgStyle);
             GUI.Label(new Rect(rect.x + 0f, rect.y + 5f, widthSize + 10, 95f), "Spektre menu\nv 0.03", LabelStyle);
-           
 
-            if (_CharacterCollected)
+            if (NetworkServer.active)
             {
-               
-                // we dont have a god toggle bool, because we can just ref localhealth
-                if (LocalHealth.godMode)
+                GetCharacter();
+                if (_CharacterCollected)
                 {
-                    if (GUI.Button(BtnRect(1, false), "God mode: ON", OnStyle))
+
+                    // we dont have a god toggle bool, because we can just ref localhealth
+                    if (LocalHealth.godMode)
                     {
-                        LocalHealth.godMode = false;
+                        if (GUI.Button(BtnRect(1, false), "God mode: ON", OnStyle))
+                        {
+                            LocalHealth.godMode = false;
+                        }
                     }
-                }
-                else if (GUI.Button(BtnRect(1, false), "God mode: OFF", OffStyle))
-                {
-                    LocalHealth.godMode = true;
-                }
-
-                if (skillToggle)
-                {
-                    if (GUI.Button(BtnRect(2, false), "Infinite Skills: ON", OnStyle))
+                    else if (GUI.Button(BtnRect(1, false), "God mode: OFF", OffStyle))
                     {
-                        skillToggle = false;
+                        LocalHealth.godMode = true;
                     }
-                }
-                else if (GUI.Button(BtnRect(2, false), "Infinite Skills: OFF", OffStyle))
-                {
-                    skillToggle = true;
-                }
 
-                if (renderInteractables)
-                {
-                    if (GUI.Button(BtnRect(3, false), "Interactables ESP: ON", OnStyle))
+                    if (skillToggle)
                     {
-                        renderInteractables = false;
+                        if (GUI.Button(BtnRect(2, false), "Infinite Skills: ON", OnStyle))
+                        {
+                            skillToggle = false;
+                        }
                     }
-                }
-                else if (GUI.Button(BtnRect(3, false), "Interactables ESP: OFF", OffStyle))
-                {
-                    renderInteractables = true;
-                }
+                    else if (GUI.Button(BtnRect(2, false), "Infinite Skills: OFF", OffStyle))
+                    {
+                        skillToggle = true;
+                    }
 
-                if (GUI.Button(BtnRect(4, true), "Give Money: " + moneyToGive.ToString(), BtnStyle))
-                {
-                    GiveMoney();
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
-                {
-                    if (moneyToGive > 100)
-                        moneyToGive -= 100;
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
-                {
-                    if (moneyToGive >= 100)
-                        moneyToGive += 100;
-                }
-                if (GUI.Button(BtnRect(5, true), "Give Lunar Coins: " + coinsToGive.ToString(), BtnStyle))
-                {
-                    GiveLunarCoins();
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
-                {
-                    if (coinsToGive > 10)
-                        coinsToGive -= 10;
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
-                {
-                    if (coinsToGive >= 10)
-                        coinsToGive += 10;
-                }
-                if (GUI.Button(BtnRect(6, true), "Give Experience: " + xpToGive.ToString(), BtnStyle))
-                {
-                    giveXP();
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
-                {
-                    if (xpToGive > 100)
-                        xpToGive -= 100;
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
-                {
-                    if (xpToGive >= 100)
-                        xpToGive += 100;
-                }
-                if (GUI.Button(BtnRect(7, true), "Roll Items: " + itemsToRoll.ToString(), BtnStyle))
-                {
-                    RollItems(itemsToRoll.ToString());
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
-                {
-                    if (itemsToRoll > 5)
-                        itemsToRoll -= 5;
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
-                {
-                    if (itemsToRoll >= 5)
-                        itemsToRoll += 5;
-                }
-                if (GUI.Button(BtnRect(8, true), "Give All Items: " + allItemsQuantity.ToString(), BtnStyle))
-                {
-                    GiveAllItems();
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
-                {
-                    if (allItemsQuantity > 1)
-                        allItemsQuantity -= 1;
-                }
-                if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
-                {
-                    if (allItemsQuantity >= 1)
-                        allItemsQuantity += 1;
-                }
-                if (GUI.Button(BtnRect(9, true), "Give Item by ID", BtnStyle))
-                {
-                    int i;
-                    i = int.Parse(str);
-                    GiveItem(i);
-                }
-                str = GUI.TextField(new Rect(rect.x + widthSize - 80, rect.y + btnY, 85, 40), str, OffStyle);
-                if (GUI.Button(BtnRect(10, false), "Stack Inventory", BtnStyle)) 
-                {
-                    StackInventory();
+                    if (renderInteractables)
+                    {
+                        if (GUI.Button(BtnRect(3, false), "Interactables ESP: ON", OnStyle))
+                        {
+                            renderInteractables = false;
+                        }
+                    }
+                    else if (GUI.Button(BtnRect(3, false), "Interactables ESP: OFF", OffStyle))
+                    {
+                        renderInteractables = true;
+                    }
 
-                }
-                if (GUI.Button(BtnRect(11, false), "Clear Inventory", BtnStyle))
-                {
+                    if (GUI.Button(BtnRect(4, true), "Give Money: " + moneyToGive.ToString(), BtnStyle))
+                    {
+                        GiveMoney();
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
+                    {
+                        if (moneyToGive > 100)
+                            moneyToGive -= 100;
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
+                    {
+                        if (moneyToGive >= 100)
+                            moneyToGive += 100;
+                    }
+                    if (GUI.Button(BtnRect(5, true), "Give Lunar Coins: " + coinsToGive.ToString(), BtnStyle))
+                    {
+                        GiveLunarCoins();
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
+                    {
+                        if (coinsToGive > 10)
+                            coinsToGive -= 10;
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
+                    {
+                        if (coinsToGive >= 10)
+                            coinsToGive += 10;
+                    }
+                    if (GUI.Button(BtnRect(6, true), "Give Experience: " + xpToGive.ToString(), BtnStyle))
+                    {
+                        giveXP();
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
+                    {
+                        if (xpToGive > 100)
+                            xpToGive -= 100;
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
+                    {
+                        if (xpToGive >= 100)
+                            xpToGive += 100;
+                    }
+                    if (GUI.Button(BtnRect(7, true), "Roll Items: " + itemsToRoll.ToString(), BtnStyle))
+                    {
+                        RollItems(itemsToRoll.ToString());
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
+                    {
+                        if (itemsToRoll > 5)
+                            itemsToRoll -= 5;
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
+                    {
+                        if (itemsToRoll >= 5)
+                            itemsToRoll += 5;
+                    }
+                    if (GUI.Button(BtnRect(8, true), "Give All Items: " + allItemsQuantity.ToString(), BtnStyle))
+                    {
+                        GiveAllItems();
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 80, rect.y + btnY, 40, 40), "-", OffStyle))
+                    {
+                        if (allItemsQuantity > 1)
+                            allItemsQuantity -= 1;
+                    }
+                    if (GUI.Button(new Rect(rect.x + widthSize - 35, rect.y + btnY, 40, 40), "+", OffStyle))
+                    {
+                        if (allItemsQuantity >= 1)
+                            allItemsQuantity += 1;
+                    }
+                    if (GUI.Button(BtnRect(9, true), "Give Item by ID", BtnStyle))
+                    {
+                        int i;
+                        i = int.Parse(str);
+                        GiveItem(i);
+                    }
+                    str = GUI.TextField(new Rect(rect.x + widthSize - 80, rect.y + btnY, 85, 40), str, OffStyle);
+                    if (GUI.Button(BtnRect(10, false), "Stack Inventory", BtnStyle))
+                    {
+                        StackInventory();
 
-                    ClearInventory();
+                    }
+                    if (GUI.Button(BtnRect(11, false), "Clear Inventory", BtnStyle))
+                    {
+
+                        ClearInventory();
+                    }
                 }
             }
             else
